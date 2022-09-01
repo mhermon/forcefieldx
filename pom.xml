@@ -1101,6 +1101,10 @@
       <url>https://github.com/mjschnie/dependency/raw/master</url>
     </repository>
     <repository>
+      <id>djl.ai</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </repository>
+    <repository>
       <id>2.apache.repo</id>
       <name>Apache Maven Repository</name>
       <releases>

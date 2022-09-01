@@ -219,6 +219,23 @@
       <groupId>org.slf4j</groupId>
       <version>${slf4j-nop.version}</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/ai.djl/api -->
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>api</artifactId>
+      <version>0.19.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-engine</artifactId>
+      <version>0.19.0-SNAPSHOT</version>
+      <scope>runtime</scope>
+    </dependency>  
+    <dependency>
+      <groupId>org.pytorch</groupId>
+      <artifactId>pytorch_java_only</artifactId>
+      <version>1.12.1</version>
+    </dependency>
     <!-- dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>libtensorflow</artifactId>

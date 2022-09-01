@@ -30,6 +30,7 @@ website/
 .idea/
 .netbeans/
 .mvn/
+.vscode/
 
 velocity.log
 
