@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class ANIEnergyModel {
 
-    private final double HARTREE_TO_KCAL_MOL_MULTIPLIER = 627.503;
+    private final double HARTREE_TO_KCAL_MOL_MULTIPLIER = 627.5094738898777;
 
     private final Path MODEL_DIR = Paths.get("modules/potential/src/main/java/ffx/potential/models");
 
@@ -51,22 +51,25 @@ public class ANIEnergyModel {
         };
     }
 
-    public void run(final String modelType) throws MalformedModelException, IOException {
+    public void run(final String modelType, final long[] species, final float[] coordinates)
+                    throws MalformedModelException, IOException {
+
         final Model model = loadModel(ANI_MAP.get(modelType));
-        try(NDManager manager = NDManager.newBaseManager()){
-            NDArray species = manager.create(new long[]{6, 1, 1, 1, 1}, new Shape(5));
-            species.setName("input1()");
-            NDArray coordinates = manager.create(new float[]{0.03192167f, 0.00638559f, 0.01301679f,
-                                                             -0.83140486f, 0.39370209f, -0.26395324f,
-                                                             -0.66518241f, -0.84461308f, 0.20759389f,
-                                                             0.45554739f, 0.54289633f, 0.81170881f,
-                                                             0.66091919f, -0.16799635f, -0.91037834f},
-                                                 new Shape(5,3));
-            coordinates.setName("input1()");
-            final NDList input = new NDList(species, coordinates);
+
+        try (NDManager manager = NDManager.newBaseManager()) {
+            final int numAtoms = species.length;
+
+            NDArray speciesND = manager.create(species, new Shape(numAtoms));
+            speciesND.setName("input1()");
+            NDArray coordinatesND = manager.create(coordinates, new Shape(numAtoms, 3));
+            coordinatesND.setName("input1()");
+            final NDList input = new NDList(speciesND, coordinatesND);
             input.attach(manager);
+
             final double hartreeEnergy = predictEnergies(model, input);
             final double kcalPerMolEnergy = hartreeToKcalPerMol(hartreeEnergy);
+
+            logger.info(format("Energy (Hartree): %f", hartreeEnergy));
             logger.info(format("Energy (KCal/Mol): %f", kcalPerMolEnergy));
         } catch (Exception e) {
             logger.throwing("ANIEnergyModel", "run", e);
