@@ -59,7 +59,7 @@ import picocli.CommandLine.Parameters
  * <br>
  * ffxc Superpose [options] &lt;filename&gt;
  */
-@Command(description = " Superpose frames one or two trajectory files to calculate RMSD.", name = "ffxc Superpose")
+@Command(description = " Superpose frames one or two trajectory files to calculate RMSD.", name = "Superpose")
 class Superpose extends AlgorithmsScript {
 
   @Mixin
@@ -239,7 +239,8 @@ class Superpose extends AlgorithmsScript {
 
       // Keep only active atoms.
       if (atom.isActive()) {
-        selectedList.add(atom.getIndex())
+        // Note that the atom index list must run from 0 to N-1.
+        selectedList.add(atom.getIndex() - 1)
       }
     }
 

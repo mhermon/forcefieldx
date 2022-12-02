@@ -67,12 +67,6 @@ import ffx.crystal.SymOp;
 import ffx.numerics.atomic.AtomicDoubleArray3D;
 import ffx.potential.bonded.Atom;
 import ffx.potential.nonbonded.MaskingInterface;
-import ffx.potential.nonbonded.ParticleMeshEwald.LambdaMode;
-import ffx.potential.nonbonded.ParticleMeshEwald;
-import ffx.potential.nonbonded.ParticleMeshEwald.EwaldParameters;
-import ffx.potential.nonbonded.ParticleMeshEwald.PMETimings;
-import ffx.potential.nonbonded.ParticleMeshEwald.RealSpaceNeighborParameters;
-import ffx.potential.nonbonded.ParticleMeshEwald.ScaleParameters;
 import ffx.potential.nonbonded.ReciprocalSpace;
 import ffx.potential.parameters.ForceField;
 import java.util.List;
@@ -151,7 +145,7 @@ public class PermanentFieldRegion extends ParallelRegion implements MaskingInter
   private int[][] mask13;
   private int[][] mask14;
   /** The current LambdaMode of this PME instance (or OFF for no lambda dependence). */
-  private LambdaMode lambdaMode = ParticleMeshEwald.LambdaMode.OFF;
+  private LambdaMode lambdaMode = LambdaMode.OFF;
   /** Reciprocal space instance. */
   private ReciprocalSpace reciprocalSpace;
 
@@ -285,9 +279,9 @@ public class PermanentFieldRegion extends ParallelRegion implements MaskingInter
     this.reciprocalSpaceTerm = reciprocalSpaceTerm;
     this.reciprocalSpace = reciprocalSpace;
     if (pcgSolver != null) {
-      this.preconditionerCutoff = pcgSolver.preconditionerCutoff;
-      this.preconditionerLists = pcgSolver.preconditionerLists;
-      this.preconditionerCounts = pcgSolver.preconditionerCounts;
+      this.preconditionerCutoff = pcgSolver.getPreconditionerCutoff();
+      this.preconditionerLists = pcgSolver.getPreconditionerLists();
+      this.preconditionerCounts = pcgSolver.getPreconditionerCounts();
     }
     this.aewald = ewaldParameters.aewald;
     this.an0 = ewaldParameters.an0;
@@ -616,7 +610,7 @@ public class PermanentFieldRegion extends ParallelRegion implements MaskingInter
             if (!use[k]) {
               continue;
             }
-            if (lambdaMode == ParticleMeshEwald.LambdaMode.VAPOR) {
+            if (lambdaMode == LambdaMode.VAPOR) {
               boolean sameMolecule = (moleculei == molecule[k]);
               if ((intermolecularSoftcore && !sameMolecule)
                   || (intramolecularSoftcore && sameMolecule)) {
