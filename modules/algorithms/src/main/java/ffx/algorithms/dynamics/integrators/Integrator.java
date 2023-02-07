@@ -132,9 +132,7 @@ public abstract class Integrator {
    */
   public static IntegratorEnum parseIntegrator(String str) {
     try {
-      String integrator = str.toUpperCase().replaceAll("\\s+", "");
-      integrator = integrator.replaceAll("-", "_");
-      return IntegratorEnum.valueOf(integrator);
+      return IntegratorEnum.valueOf(str.toUpperCase().replaceAll("\\s+", ""));
     } catch (Exception e) {
       logger.info(
           String.format(" Could not parse %s as an integrator; defaulting to Verlet.", str));
