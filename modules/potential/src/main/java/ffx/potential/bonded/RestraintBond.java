@@ -2,7 +2,7 @@
 //
 // Title:       Force Field X.
 // Description: Force Field X - Software for Molecular Biophysics.
-// Copyright:   Copyright (c) Michael J. Schnieders 2001-2021.
+// Copyright:   Copyright (c) Michael J. Schnieders 2001-2023.
 //
 // This file is part of Force Field X.
 //
@@ -65,15 +65,15 @@ public class RestraintBond extends BondedTerm implements LambdaInterface {
   private final double rlwInv;
   private final UnivariateSwitchingFunction switchingFunction;
   public BondType bondType = null;
-  private boolean lambdaTerm;
+  private final boolean lambdaTerm;
   private double lambda = 1.0;
   private double switchVal = 1.0;
   private double switchdUdL = 1.0;
   private double switchd2UdL2 = 1.0;
   private double dEdL = 0.0;
   private double d2EdL2 = 0.0;
-  private double[][] dEdXdL = new double[2][3];
-  private Crystal crystal;
+  private final double[][] dEdXdL = new double[2][3];
+  private final Crystal crystal;
 
   /**
    * Creates a distance restraint between two Atoms.
@@ -86,14 +86,8 @@ public class RestraintBond extends BondedTerm implements LambdaInterface {
    * @param lamEnd At what lambda does the restraint hit full strength?
    * @param sf Switching function determining lambda dependence; null produces a ConstantSwitch.
    */
-  public RestraintBond(
-      Atom a1,
-      Atom a2,
-      Crystal crystal,
-      boolean lambdaTerm,
-      double lamStart,
-      double lamEnd,
-      UnivariateSwitchingFunction sf) {
+  public RestraintBond(Atom a1, Atom a2, Crystal crystal, boolean lambdaTerm, double lamStart,
+      double lamEnd, UnivariateSwitchingFunction sf) {
     restraintLambdaStart = lamStart;
     restraintLambdaStop = lamEnd;
     assert lamEnd > lamStart;
@@ -125,8 +119,8 @@ public class RestraintBond extends BondedTerm implements LambdaInterface {
    * <p>Evaluate this Bond energy.
    */
   @Override
-  public double energy(
-      boolean gradient, int threadID, AtomicDoubleArray3D grad, AtomicDoubleArray3D lambdaGrad) {
+  public double energy(boolean gradient, int threadID, AtomicDoubleArray3D grad,
+      AtomicDoubleArray3D lambdaGrad) {
 
     double[] a0 = new double[3];
     double[] a1 = new double[3];
@@ -193,7 +187,7 @@ public class RestraintBond extends BondedTerm implements LambdaInterface {
    * Find the other Atom in <b>this</b> Bond. These two atoms are said to be 1-2.
    *
    * @param a The known Atom.
-   * @return The other Atom that makes up <b>this</b> Bond, or Null if Atom a is not part of
+   * @return The other Atom that makes up <b>this</b> Bond, or Null if Atom <b>a</b> is not part of
    *     <b>this</b> Bond.
    */
   public Atom get1_2(Atom a) {
@@ -291,43 +285,25 @@ public class RestraintBond extends BondedTerm implements LambdaInterface {
 
   /** Log details for this Bond energy term. */
   public void log() {
-    logger.info(
-        String.format(
-            " %s %6d-%s %6d-%s %6.4f  %6.4f  %10.4f",
-            "Restraint-Bond",
-            atoms[0].getIndex(),
-            atoms[0].getAtomType().name,
-            atoms[1].getIndex(),
-            atoms[1].getAtomType().name,
-            bondType.distance,
-            value,
-            energy));
+    logger.info(String.format(" %s %6d-%s %6d-%s %6.4f  %6.4f  %10.4f", "Restraint-Bond",
+        atoms[0].getIndex(), atoms[0].getAtomType().name, atoms[1].getIndex(),
+        atoms[1].getAtomType().name, bondType.distance, value, energy));
     if (!(switchingFunction instanceof ConstantSwitch)) {
-      logger.info(
-          String.format(
-              " Switching function (lambda dependence): %s", switchingFunction.toString()));
+      logger.info(String.format(" Switching function (lambda dependence): %s",
+          switchingFunction.toString()));
     }
   }
 
   @Override
   public String toString() {
-    StringBuilder sb =
-        new StringBuilder(
-            String.format(
-                " Distance restraint between atoms %s-%d %s-%d, "
-                    + "current distance %10.4g, optimum %10.4g with a %10.4g Angstrom flat bottom, with force constant %10.4g.",
-                atoms[0],
-                atoms[0].getIndex(),
-                atoms[1],
-                atoms[1].getIndex(),
-                value,
-                bondType.distance,
-                bondType.flatBottomRadius,
-                bondType.forceConstant));
+    StringBuilder sb = new StringBuilder(String.format(
+        " Distance restraint between atoms %s-%d %s-%d, "
+            + "current distance %10.4g, optimum %10.4g with a %10.4g Angstrom flat bottom, with force constant %10.4g.",
+        atoms[0], atoms[0].getIndex(), atoms[1], atoms[1].getIndex(), value, bondType.distance,
+        bondType.flatBottomRadius, bondType.forceConstant));
     if (!(switchingFunction instanceof ConstantSwitch)) {
-      sb.append(
-          String.format(
-              "\n Switching function (lambda dependence): %s", switchingFunction.toString()));
+      sb.append(String.format("\n Switching function (lambda dependence): %s",
+          switchingFunction.toString()));
     }
     return sb.toString();
   }

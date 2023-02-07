@@ -2,7 +2,7 @@
 //
 // Title:       Force Field X.
 // Description: Force Field X - Software for Molecular Biophysics.
-// Copyright:   Copyright (c) Michael J. Schnieders 2001-2021.
+// Copyright:   Copyright (c) Michael J. Schnieders 2001-2023.
 //
 // This file is part of Force Field X.
 //
@@ -44,8 +44,6 @@ import static ffx.numerics.multipole.GKSource.GK_TENSOR_MODE.BORN;
 import static ffx.numerics.multipole.GKSource.GK_TENSOR_MODE.POTENTIAL;
 import static java.util.Arrays.fill;
 
-import ffx.numerics.math.DoubleMath;
-
 public class GKEnergyQI {
 
   private final GKSource gkSource;
@@ -53,7 +51,15 @@ public class GKEnergyQI {
   private final GKTensorQI gkDipole;
   private final GKTensorQI gkQuadrupole;
 
-  public GKEnergyQI(double gkc, double epsilon, boolean gradient) {
+  /**
+   * Compute the GK Energy using a QI frame.
+   *
+   * @param soluteDielectric Solute dielectric constant.
+   * @param solventDielectric Solvent dielectric constant.
+   * @param gkc The GK interaction parameter.
+   * @param gradient If true, the gradient will be computed.
+   */
+  public GKEnergyQI(double soluteDielectric, double solventDielectric, double gkc, boolean gradient) {
     int monopoleOrder = 2;
     int dipoleOrder = 3;
     int quadrupoleOrder = 4;
@@ -63,9 +69,9 @@ public class GKEnergyQI {
       quadrupoleOrder = 5;
     }
     gkSource = new GKSource(quadrupoleOrder, gkc);
-    gkMonopole = new GKTensorQI(MONOPOLE, monopoleOrder, gkSource, 1.0, epsilon);
-    gkDipole = new GKTensorQI(DIPOLE, dipoleOrder, gkSource, 1.0, epsilon);
-    gkQuadrupole = new GKTensorQI(QUADRUPOLE, quadrupoleOrder, gkSource, 1.0, epsilon);
+    gkMonopole = new GKTensorQI(MONOPOLE, monopoleOrder, gkSource, soluteDielectric, solventDielectric);
+    gkDipole = new GKTensorQI(DIPOLE, dipoleOrder, gkSource, soluteDielectric, solventDielectric);
+    gkQuadrupole = new GKTensorQI(QUADRUPOLE, quadrupoleOrder, gkSource, soluteDielectric, solventDielectric);
   }
 
   public void initPotential(double[] r, double r2, double rbi, double rbk) {

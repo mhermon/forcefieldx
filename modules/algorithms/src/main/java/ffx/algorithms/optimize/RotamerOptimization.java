@@ -2,7 +2,7 @@
 //
 // Title:       Force Field X.
 // Description: Force Field X - Software for Molecular Biophysics.
-// Copyright:   Copyright (c) Michael J. Schnieders 2001-2021.
+// Copyright:   Copyright (c) Michael J. Schnieders 2001-2023.
 //
 // This file is part of Force Field X.
 //
@@ -816,7 +816,7 @@ public class RotamerOptimization implements Terminatable {
       return null;
     } else {
       List<ResidueState[]> states = new ArrayList<>(ensembleStates.size());
-      ensembleStates.forEach((es) -> states.add(es.getVal()));
+      ensembleStates.forEach((es) -> states.add(es.val()));
       return states;
     }
   }
@@ -1240,7 +1240,7 @@ public class RotamerOptimization implements Terminatable {
   public void setCoordinatesToEnsemble(int ensnum) {
     if (ensembleStates != null && !ensembleStates.isEmpty()) {
       ensnum %= ensembleStates.size();
-      ResidueState.revertAllCoordinates(residueList, ensembleStates.get(ensnum).getVal());
+      ResidueState.revertAllCoordinates(residueList, ensembleStates.get(ensnum).val());
     } else {
       throw new IllegalArgumentException(" Ensemble states not initialized!");
     }
@@ -3020,8 +3020,7 @@ public class RotamerOptimization implements Terminatable {
                         ex));
               }
               if (startingEnergy <= finalEnergy) {
-                logger.warning(
-                    "Optimization did not yield a better energy. Reverting to original coordinates.");
+                logger.info("Optimization did not yield a better energy. Reverting to original coordinates.");
                 ResidueState.revertAllCoordinates(currentWindow, coordinates);
               } else {
                 // Copy sliding window optimal rotamers into the overall optimum array.
@@ -4653,8 +4652,7 @@ public class RotamerOptimization implements Terminatable {
                       ex));
             }
             if (startingEnergy <= finalEnergy) {
-              logger.warning(
-                  "Optimization did not yield a better energy. Reverting to original coordinates.");
+              logger.info("Optimization did not yield a better energy. Reverting to original coordinates.");
               ResidueState.revertAllCoordinates(residueSubsetList, coordinates);
             } else {
               // Copy sliding window optimal rotamers into the overall optimum array.
