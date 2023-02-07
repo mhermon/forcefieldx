@@ -1,8 +1,8 @@
-// ******************************************************************************
+//******************************************************************************
 //
 // Title:       Force Field X.
 // Description: Force Field X - Software for Molecular Biophysics.
-// Copyright:   Copyright (c) Michael J. Schnieders 2001-2021.
+// Copyright:   Copyright (c) Michael J. Schnieders 2001-2023.
 //
 // This file is part of Force Field X.
 //
@@ -34,28 +34,72 @@
 // you are not obligated to do so. If you do not wish to do so, delete this
 // exception statement from your version.
 //
-// ******************************************************************************
-package ffx.potential.parsers;
+//******************************************************************************
+package ffx.potential.groovy.test
+
+import ffx.numerics.fft.TornadoDFT
+import ffx.potential.cli.PotentialScript
+import ffx.numerics.tornado.FFXTornado
+
+import picocli.CommandLine.Command
+import picocli.CommandLine.Parameters
 
 /**
- * DataFilter interface.
- *
- * @author Jacob Litman
+ * The Tornado script runs an FFT written in Java using OpenCL, PTX or a SPIRV backend.
+ * <br>
+ * Usage:
+ * <br>
+ * ffxc test.Tornado length
  */
-public interface DataFilter {
+@Command(description = "The Tornado script runs an FFT written in Java using OpenCL, PTX or SPIRV backends.",
+    name = "test.Tornado")
+class Tornado extends PotentialScript {
 
   /**
-   * accept.
-   *
-   * @param ob a {@link java.lang.Object} object.
-   * @return a boolean.
+   * The final argument(s) should be one or more filenames.
    */
-  boolean accept(Object ob);
+  @Parameters(arity = "1..", paramLabel = "FFT Lengths",
+      description = 'FFT length(s).')
+  private List<Integer> lengths = null
 
   /**
-   * getDescription.
-   *
-   * @return a {@link java.lang.String} object.
+   * Tornado Constructor.
    */
-  String getDescription();
+  Tornado() {
+    this(new Binding())
+  }
+
+  /**
+   * Tornado Constructor.
+   * @param binding Groovy Binding to use.
+   */
+  Tornado(Binding binding) {
+    super(binding)
+  }
+
+  /**
+   * Execute the script.
+   */
+  @Override
+  Tornado run() {
+
+    if (!init()) {
+      return this
+    }
+
+    for (Integer length : lengths) {
+      TornadoDFT tornadoDFT = new TornadoDFT(length)
+      float[] data = new float[2 * length]
+      for (int i = 0; i < 2 * length; i++) {
+        data[i] = 1.0f / (float) (i + 2)
+      }
+
+      int numDevices = FFXTornado.getNumberOfDevices()
+      for (int i = 0; i < numDevices; i++) {
+        tornadoDFT.validate(FFXTornado.getDevice(i))
+      }
+    }
+
+    return this
+  }
 }
